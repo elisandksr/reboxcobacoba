@@ -130,8 +130,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         color: Colors.white.withOpacity(0.2),
                       ),
                       child: Image.asset(
-                        'assets/logo_rebox.png',
-                        height: 90,
+                        'assets/logo_rebox1.png',
+                        height: 100,
                       ),
                     ),
                     const SizedBox(height: 20),
