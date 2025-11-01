@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     },
     {
       'id': 2,
-      'image': 'assets/adidas.jpg',
+      'image': 'assets/sepatu1.jpg',
       'name': 'Sepatu Olahraga Merk Adinda',
       'desc': 'Kondisi 90%, ukuran 40. Cocok untuk lari atau kegiatan outdoor. Bagian sol masih tebal dan tidak ada yang robek.',
       // Kontak yang SANGAT PANJANG untuk menguji perbaikan layout
