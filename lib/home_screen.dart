@@ -66,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     },
     {
       'id': 5,
-      'image': 'assets/buku.png',
+      'image': 'assets/buku.jpg',
       'name': 'Buku Pelajaran SMA Lengkap',
       'desc': 'Lengkap 1 paket kelas 10, 11, dan 12. Masih bagus, hanya sedikit coretan pensil. Sangat membantu untuk belajar.',
       'contact': '0877-9876-5432',

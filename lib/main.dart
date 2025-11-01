@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:latcobareboc/home_screen.dart';
 import 'login_screen.dart';
 
 void main() {
