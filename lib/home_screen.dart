@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     },
     {
       'id': 4,
-      'image': 'assets/jaket.jpg', 
+      'image': 'assets/jaket2.jpg', 
       'name': 'Jaket Musim Dingin Tebal',
       'desc': 'Hangat dan nyaman, ukuran M. Cocok untuk daerah pegunungan atau cuaca dingin. Warna navy gelap, bersih dari noda.',
       'contact': '0856-1234-5678',
