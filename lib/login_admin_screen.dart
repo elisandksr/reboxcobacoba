@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login_admin_screen.dart'; // Sesuaikan dengan halaman dashboard admin Anda
+import 'admin_dashboard_screen.dart'; // Sesuaikan dengan halaman dashboard admin Anda
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
@@ -318,38 +318,6 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> with SingleTickerPr
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// Contoh halaman Admin Dashboard (sesuaikan dengan kebutuhan Anda)
-class AdminDashboard extends StatelessWidget {
-  final String adminUsername;
-  
-  const AdminDashboard({super.key, required this.adminUsername});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Admin Dashboard - $adminUsername'),
-        backgroundColor: Colors.orange[600],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.dashboard, size: 100, color: Colors.orange[600]),
-            const SizedBox(height: 20),
-            Text(
-              'Selamat datang, $adminUsername!',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            const Text('Ini adalah halaman Admin Dashboard'),
-          ],
         ),
       ),
     );
