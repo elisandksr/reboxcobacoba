@@ -35,7 +35,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       'image': 'assets/sepatu1.jpg',
       'name': 'Sepatu Olahraga Merk Adinda',
       'desc': 'Kondisi 90%, ukuran 40. Cocok untuk lari atau kegiatan outdoor. Bagian sol masih tebal dan tidak ada yang robek.',
-      // Kontak yang SANGAT PANJANG untuk menguji perbaikan layout
       'contact': '26476326497268', 
       'category': 'Sepatu',
       'condition': 'Baik',
@@ -111,12 +110,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     }).toList();
   }
 
-  // ============== FUNGSI DIALOG KLAIM YANG DIREVISI ==============
   void _showConfirmClaimDialog(Map<String, dynamic> item) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        // Bentuk dialog yang konsisten
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Klaim Barang',
@@ -126,7 +123,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
         ),
         content: Column(
-          // Memastikan column mengambil ruang minimal yang diperlukan
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -158,10 +154,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     children: [
                       Icon(Icons.phone, color: Colors.orange[600], size: 18),
                       const SizedBox(width: 8),
-                      
-                      // ** PERBAIKAN: Wrap Text dengan Expanded **
-                      // Ini mencegah Text yang sangat panjang memaksa Row menyempit
-                      // dan memastikan Tampilan Klaim Barang (SizeBox) tetap lebar normal.
                       Expanded(
                         child: Text(
                           item['contact'],
@@ -170,11 +162,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             fontWeight: FontWeight.w600,
                             color: Colors.black87,
                           ),
-                          // Memungkinkan teks untuk membungkus jika terlalu panjang
                           overflow: TextOverflow.clip, 
                         ),
                       ),
-                      // ****************************************************
                     ],
                   ),
                 ],
@@ -192,7 +182,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              // Menambahkan padding untuk menjaga ukuran tombol konsisten
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), 
               backgroundColor: Colors.orange[600],
               shape: RoundedRectangleBorder(
@@ -215,7 +204,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       ),
     );
   }
-  // ================================================================
 
   void _claimItem(Map<String, dynamic> item) {
     setState(() {
@@ -245,7 +233,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  // Fungsi _showItemDetail tetap sama
   void _showItemDetail(Map<String, dynamic> item) {
     final isClaimed = item['isClaimed'] as bool;
     
@@ -414,7 +401,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  // Fungsi _buildItemCard tetap sama
   Widget _buildItemCard(Map<String, dynamic> item) {
     final isClaimed = item['isClaimed'] as bool;
     
@@ -500,42 +486,43 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   ),
               ],
             ),
-            // Konten teks & tombol
+            // Konten teks & tombol - PERBAIKAN UTAMA DI SINI
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
+                padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item['name']!,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            color: Colors.black87,
-                            height: 1.2,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item['name']!,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: Colors.black87,
+                              height: 1.2,
+                            ),
+                            maxLines: 2, 
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 2, 
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        // PERBAIKAN: maxLines disesuaikan menjadi 2, fontSize lebih besar
-                        Text(
-                          item['desc']!,
-                          style: TextStyle(
-                            fontSize: 14, 
-                            color: const Color.fromARGB(255, 59, 59, 59),
-                            height: 1.3,
+                          const SizedBox(height: 4),
+                          Text(
+                            item['desc']!,
+                            style: TextStyle(
+                              fontSize: 13, 
+                              color: const Color.fromARGB(255, 59, 59, 59),
+                              height: 1.3,
+                            ),
+                            maxLines: 3, 
+                            overflow: TextOverflow.ellipsis, 
                           ),
-                          maxLines: 5, 
-                          overflow: TextOverflow.ellipsis, 
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
+                    const SizedBox(height: 8),
                     SizedBox(
                       width: double.infinity,
                       height: 36,
@@ -771,7 +758,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     crossAxisCount: 2,
                     crossAxisSpacing: 14,
                     mainAxisSpacing: 14,
-                    // Tetap menggunakan rasio yang Anda tentukan
                     childAspectRatio: 0.58, 
                   ),
                   delegate: SliverChildBuilderDelegate(
