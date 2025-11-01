@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'donasi_saya_screen.dart'; // Pastikan file ini ada
-import 'profil_saya_screen.dart'; // Pastikan file ini ada
+import 'donasi_saya_screen.dart';
+import 'profil_saya_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String? username;
-  
+
   const HomeScreen({super.key, this.username});
 
   @override
@@ -17,7 +17,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   String _searchQuery = '';
   late AnimationController _animationController;
 
-  // Data Barang
   List<Map<String, dynamic>> items = [
     {
       'id': 1,
@@ -35,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       'image': 'assets/sepatu1.jpg',
       'name': 'Sepatu Olahraga Merk Adinda',
       'desc': 'Kondisi 90%, ukuran 40. Cocok untuk lari atau kegiatan outdoor. Bagian sol masih tebal dan tidak ada yang robek.',
-      'contact': '26476326497268', 
+      'contact': '26476326497268',
       'category': 'Sepatu',
       'condition': 'Baik',
       'isClaimed': false,
@@ -54,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     },
     {
       'id': 4,
-      'image': 'assets/jaket2.jpg', 
+      'image': 'assets/jaket2.webp',
       'name': 'Jaket Musim Dingin Tebal',
       'desc': 'Hangat dan nyaman, ukuran M. Cocok untuk daerah pegunungan atau cuaca dingin. Warna navy gelap, bersih dari noda.',
       'contact': '0856-1234-5678',
@@ -122,55 +121,60 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             color: Colors.orange[600],
           ),
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Anda yakin ingin mengklaim "${item['name']}"?',
-              style: const TextStyle(fontSize: 14, color: Colors.black87),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.orange[100],
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.orange[200]!),
+        content: SizedBox(
+          width: 300,
+          height: 180,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Anda yakin ingin mengklaim "${item['name']}"?',
+                style: const TextStyle(fontSize: 14, color: Colors.black87),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Kontak Pemilik:',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.orange[700],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.phone, color: Colors.orange[600], size: 18),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          item['contact'],
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87,
-                          ),
-                          overflow: TextOverflow.clip, 
-                        ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange[100],
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.orange[200]!),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Kontak Pemilik:',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.orange[700],
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(Icons.phone, color: Colors.orange[600], size: 18),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            item['contact'],
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -182,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), 
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               backgroundColor: Colors.orange[600],
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -212,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         items[idx]['isClaimed'] = true;
       }
     });
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -235,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   void _showItemDetail(Map<String, dynamic> item) {
     final isClaimed = item['isClaimed'] as bool;
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -403,7 +407,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   Widget _buildItemCard(Map<String, dynamic> item) {
     final isClaimed = item['isClaimed'] as bool;
-    
+
     return GestureDetector(
       onTap: () => _showItemDetail(item),
       child: Container(
@@ -421,7 +425,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Foto dengan rasio 1:1
             Stack(
               children: [
                 ClipRRect(
@@ -434,7 +437,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     ),
                   ),
                 ),
-                // Tag kategori
                 Positioned(
                   top: 10,
                   right: 10,
@@ -460,7 +462,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     ),
                   ),
                 ),
-                // Badge diklaim
                 if (isClaimed)
                   Positioned(
                     top: 10,
@@ -486,7 +487,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   ),
               ],
             ),
-            // Konten teks & tombol - PERBAIKAN UTAMA DI SINI
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
@@ -505,19 +505,19 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               color: Colors.black87,
                               height: 1.2,
                             ),
-                            maxLines: 2, 
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 4),
                           Text(
                             item['desc']!,
                             style: TextStyle(
-                              fontSize: 13, 
+                              fontSize: 13,
                               color: const Color.fromARGB(255, 59, 59, 59),
                               height: 1.3,
                             ),
-                            maxLines: 3, 
-                            overflow: TextOverflow.ellipsis, 
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
@@ -758,7 +758,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     crossAxisCount: 2,
                     crossAxisSpacing: 14,
                     mainAxisSpacing: 14,
-                    childAspectRatio: 0.58, 
+                    childAspectRatio: 0.58,
                   ),
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
