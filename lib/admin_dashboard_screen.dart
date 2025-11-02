@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login_admin_screen.dart';
+import 'kelola_pengguna_screen.dart'; 
 
 class AdminDashboard extends StatefulWidget {
   final String adminUsername;
@@ -302,20 +303,3 @@ class KelolaBarangScreen extends StatelessWidget {
   }
 }
 
-// Placeholder untuk Kelola Pengguna Screen
-class KelolaPenggunaScreen extends StatelessWidget {
-  const KelolaPenggunaScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kelola Pengguna'),
-        backgroundColor: Colors.orange[600],
-      ),
-      body: const Center(
-        child: Text('Halaman Kelola Pengguna'),
-      ),
-    );
-  }
-}
