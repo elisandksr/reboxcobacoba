@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart'; // ✅ untuk kIsWeb
 import 'login_screen.dart';
+import 'edit_profil_screen.dart';
 
 class ProfilSayaScreen extends StatefulWidget {
   final String? username;
@@ -11,9 +16,17 @@ class ProfilSayaScreen extends StatefulWidget {
 }
 
 class _ProfilSayaScreenState extends State<ProfilSayaScreen> {
+  bool _isEditing = false;
+
   late String _displayName;
   late String _email;
   late String _phone;
+
+  // ✅ Pisahkan antara file & bytes agar bisa di web & mobile
+  File? _profileImageFile;
+  Uint8List? _profileImageBytes;
+
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -23,108 +36,60 @@ class _ProfilSayaScreenState extends State<ProfilSayaScreen> {
     _phone = '0812-3456-7890';
   }
 
-  void _showEditProfileDialog() {
-    final nameController = TextEditingController(text: _displayName);
-    final emailController = TextEditingController(text: _email);
-    final phoneController = TextEditingController(text: _phone);
+  // ✅ Fungsi pilih gambar, otomatis menyesuaikan platform
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      if (kIsWeb) {
+        final bytes = await pickedFile.readAsBytes();
+        setState(() {
+          _profileImageBytes = bytes;
+        });
+      } else {
+        setState(() {
+          _profileImageFile = File(pickedFile.path);
+        });
+      }
+    }
+  }
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          'Edit Profil',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: 'Nama Lengkap',
-                  hintText: 'Masukkan nama Anda',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  prefixIcon: const Icon(Icons.person),
-                ),
-              ),
-              const SizedBox(height: 15),
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  hintText: 'Masukkan email Anda',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  prefixIcon: const Icon(Icons.email),
-                ),
-              ),
-              const SizedBox(height: 15),
-              TextField(
-                controller: phoneController,
-                decoration: InputDecoration(
-                  labelText: 'Nomor Telepon',
-                  hintText: 'Masukkan nomor telepon',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  prefixIcon: const Icon(Icons.phone),
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange[600],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            onPressed: () {
-              setState(() {
-                _displayName = nameController.text.isNotEmpty
-                    ? nameController.text
-                    : _displayName;
-                _email = emailController.text.isNotEmpty
-                    ? emailController.text
-                    : _email;
-                _phone = phoneController.text.isNotEmpty
-                    ? phoneController.text
-                    : _phone;
-              });
-              Navigator.pop(context);
-              
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text('Profil berhasil diperbarui'),
-                  backgroundColor: Colors.green[600],
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  margin: const EdgeInsets.all(20),
-                ),
-              );
-            },
-            child: const Text(
-              'Simpan',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
+  void _showEditProfileDialog() {
+    EditProfilDialog.show(
+      context,
+      displayName: _displayName,
+      email: _email,
+      phone: _phone,
+      onSave: (newName, newEmail, newPhone, newImage) {
+        setState(() {
+          _displayName = newName;
+          _email = newEmail;
+          _phone = newPhone;
+
+          // ✅ Pastikan sesuai tipe data
+          if (kIsWeb && newImage is Uint8List) {
+            _profileImageBytes = newImage;
+          } else if (!kIsWeb && newImage is File) {
+            _profileImageFile = newImage;
+          }
+        });
+      },
     );
   }
+
+  void _showFullImage() {
+  showDialog(
+    context: context,
+    builder: (_) => Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.all(10),
+      child: InteractiveViewer(
+        child: _profileImageBytes != null
+            ? Image.memory(_profileImageBytes!, fit: BoxFit.contain)
+            : Image.asset('assets/default_profile.png', fit: BoxFit.contain),
+      ),
+    ),
+  );
+}
 
   void _logout() {
     showDialog(
@@ -184,26 +149,38 @@ class _ProfilSayaScreenState extends State<ProfilSayaScreen> {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            // Profile Avatar
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF00A69A), Color(0xFF00736D)],
-                ),
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(30),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.person, size: 60, color: Color(0xFF00736D)),
+
+            // 🔹 FOTO PROFIL DENGAN FITUR GANTI FOTO
+            GestureDetector(
+              onTap: _isEditing ? _pickImage : _showFullImage,
+              child: Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  CircleAvatar(
+                    radius: 60,
+                    backgroundColor: Colors.grey[200],
+                    backgroundImage: _profileImageBytes != null
+                        ? MemoryImage(_profileImageBytes!)
+                        : _profileImageFile != null
+                            ? FileImage(_profileImageFile!)
+                            : const AssetImage('assets/default_profile.png')
+                                as ImageProvider,
+                  ),
+                  if (_isEditing)
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.orange[600],
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(6),
+                    child: const Icon(Icons.camera_alt,
+                        color: Colors.white, size: 20),
+                  ),
+                ],
               ),
             ),
+
             const SizedBox(height: 20),
-            // Username
             Text(
               _displayName,
               style: const TextStyle(
@@ -220,8 +197,8 @@ class _ProfilSayaScreenState extends State<ProfilSayaScreen> {
                 color: Colors.grey[600],
               ),
             ),
+
             const SizedBox(height: 30),
-            // Info Card
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -229,7 +206,7 @@ class _ProfilSayaScreenState extends State<ProfilSayaScreen> {
                 borderRadius: BorderRadius.circular(15),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),
@@ -243,8 +220,8 @@ class _ProfilSayaScreenState extends State<ProfilSayaScreen> {
                 ],
               ),
             ),
+
             const SizedBox(height: 30),
-            // Edit Profile Button
             SizedBox(
               width: double.infinity,
               height: 50,
@@ -273,8 +250,8 @@ class _ProfilSayaScreenState extends State<ProfilSayaScreen> {
                 ),
               ),
             ),
+
             const SizedBox(height: 15),
-            // Logout Button
             SizedBox(
               width: double.infinity,
               height: 50,

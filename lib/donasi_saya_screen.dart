@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'tambah_donasi_screen.dart';
+import 'dart:convert';
+import 'dart:io';
 
 class DonasiSayaScreen extends StatefulWidget {
   final List<Map<String, dynamic>> items;
@@ -50,6 +52,7 @@ class _DonasiSayaScreenState extends State<DonasiSayaScreen> {
       'condition': newItem['condition'],
       'isClaimed': false,
       'isMyDonation': true,
+      'isBase64': newItem['isBase64'] ?? false,
     };
 
     setState(() {
@@ -81,7 +84,7 @@ class _DonasiSayaScreenState extends State<DonasiSayaScreen> {
 
   void _deleteDonation(int index) {
     final item = _myDonations[index];
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -99,7 +102,8 @@ class _DonasiSayaScreenState extends State<DonasiSayaScreen> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red[600],
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
             ),
             onPressed: () {
               Navigator.pop(context);
@@ -108,13 +112,14 @@ class _DonasiSayaScreenState extends State<DonasiSayaScreen> {
                 _myDonations.removeAt(index);
               });
               widget.onItemsChanged(widget.items);
-              
+
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: const Text('Donasi berhasil dihapus'),
                   backgroundColor: Colors.red[600],
                   behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                   margin: const EdgeInsets.all(20),
                 ),
               );
@@ -135,7 +140,8 @@ class _DonasiSayaScreenState extends State<DonasiSayaScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.card_giftcard_outlined, size: 100, color: Colors.grey[300]),
+                  Icon(Icons.card_giftcard_outlined,
+                      size: 100, color: Colors.grey[300]),
                   const SizedBox(height: 20),
                   Text(
                     'Belum ada donasi Anda',
@@ -168,7 +174,7 @@ class _DonasiSayaScreenState extends State<DonasiSayaScreen> {
                     borderRadius: BorderRadius.circular(15),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
+                        color: Colors.grey.withValues(alpha: 0.1),
                         blurRadius: 6,
                         offset: const Offset(0, 3),
                       ),
@@ -178,15 +184,10 @@ class _DonasiSayaScreenState extends State<DonasiSayaScreen> {
                     contentPadding: const EdgeInsets.all(12),
                     leading: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: Image.asset(
-                        item['image']!,
-                        width: 60,
-                        height: 60,
-                        fit: BoxFit.cover,
-                      ),
+                      child: _buildImage(item),
                     ),
                     title: Text(
-                      item['name']!,
+                      item['name'] ?? '',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
@@ -197,7 +198,7 @@ class _DonasiSayaScreenState extends State<DonasiSayaScreen> {
                       children: [
                         const SizedBox(height: 4),
                         Text(
-                          item['category']!,
+                          item['category'] ?? '',
                           style: TextStyle(
                             fontSize: 11,
                             color: Colors.orange[600],
@@ -206,10 +207,12 @@ class _DonasiSayaScreenState extends State<DonasiSayaScreen> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          item['isClaimed'] ? 'Status: Diklaim' : 'Status: Menunggu',
+                          item['isClaimed'] == true
+                              ? 'Status: Diklaim'
+                              : 'Status: Menunggu',
                           style: TextStyle(
                             fontSize: 11,
-                            color: item['isClaimed']
+                            color: item['isClaimed'] == true
                                 ? Colors.green[600]
                                 : Colors.grey[500],
                             fontWeight: FontWeight.w500,
@@ -241,5 +244,60 @@ class _DonasiSayaScreenState extends State<DonasiSayaScreen> {
       ),
     );
   }
-}
 
+  // ✅ BAGIAN YANG DITAMBAHKAN UNTUK FIX GAMBAR MERAH / BASE64
+  Widget _buildImage(Map<String, dynamic> item) {
+    try {
+      final imageData = item['image'];
+
+      if (imageData == null || imageData.toString().isEmpty) {
+        return Image.asset(
+          'assets/logo_rebox.png',
+          width: 60,
+          height: 60,
+          fit: BoxFit.cover,
+        );
+      }
+
+      if (item['isBase64'] == true) {
+        // Decode base64 (untuk web & mobile)
+        return Image.memory(
+          base64Decode(imageData),
+          width: 60,
+          height: 60,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => Image.asset(
+            'assets/logo_rebox.png',
+            width: 60,
+            height: 60,
+            fit: BoxFit.cover,
+          ),
+        );
+      } else {
+        final file = File(imageData);
+        if (file.existsSync()) {
+          return Image.file(
+            file,
+            width: 60,
+            height: 60,
+            fit: BoxFit.cover,
+          );
+        } else {
+          return Image.asset(
+            'assets/logo_rebox.png',
+            width: 60,
+            height: 60,
+            fit: BoxFit.cover,
+          );
+        }
+      }
+    } catch (e) {
+      return Image.asset(
+        'assets/logo_rebox.png',
+        width: 60,
+        height: 60,
+        fit: BoxFit.cover,
+      );
+    }
+  }
+}
