@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:latcobareboc/kelola_barang_screen.dart';
 import 'login_admin_screen.dart';
 import 'kelola_pengguna_screen.dart'; 
+import 'kelola_barang_screen.dart';
 
 class AdminDashboard extends StatefulWidget {
   final String adminUsername;
@@ -285,21 +287,4 @@ class _AdminDashboardState extends State<AdminDashboard> with SingleTickerProvid
   }
 }
 
-// Placeholder untuk Kelola Barang Screen
-class KelolaBarangScreen extends StatelessWidget {
-  const KelolaBarangScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kelola Barang'),
-        backgroundColor: Colors.orange[600],
-      ),
-      body: const Center(
-        child: Text('Halaman Kelola Barang'),
-      ),
-    );
-  }
-}
 
