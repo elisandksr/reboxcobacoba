@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'donasi_saya_screen.dart';
 import 'profil_saya_screen.dart';
 import 'lihat_detail_screen.dart';
+import 'tambah_donasi_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String? username;
@@ -20,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   List<Map<String, dynamic>> items = [
     {
-      'id': 1,
+             'id': 1,
       'image': 'assets/baju1.jpeg',
       'name': 'Baju Bekas Layak Pakai',
       'desc': 'Masih bagus, bersih, dan jarang dipakai. Cocok untuk donasi ke panti asuhan atau wilayah bencana. Bahan katun lembut dan tebal.',
@@ -75,6 +77,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       'isMyDonation': false,
     },
   ];
+
 
   @override
   void initState() {
@@ -155,10 +158,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                 child: AspectRatio(
                   aspectRatio: 1,
-                  child: Image.asset(
-                    item['image']!,
-                    fit: BoxFit.cover,
-                  ),
+                  child: item['isBase64'] == true && item['image'] != null
+                      ? Image.memory(
+                          base64Decode(item['image']),
+                          fit: BoxFit.cover,
+                        )
+                      : Image.asset(
+                          item['image']!,
+                          fit: BoxFit.cover,
+                        ),
                 ),
               ),
               Positioned(
@@ -192,61 +200,44 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   left: 10,
                   child: Container(
                     padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Colors.green,
                       shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
-                          blurRadius: 4,
-                        ),
-                      ],
                     ),
-                    child: const Icon(
-                      Icons.check,
-                      color: Colors.white,
-                      size: 16,
-                    ),
+                    child: const Icon(Icons.check, color: Colors.white, size: 16),
                   ),
                 ),
             ],
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item['name']!,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            color: Colors.black87,
-                            height: 1.2,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          item['desc']!,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: const Color.fromARGB(255, 59, 59, 59),
-                            height: 1.3,
-                          ),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+                  Text(
+                    item['name'] ?? 'Tanpa Nama',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      color: Colors.black87,
+                      height: 1.2,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 4),
+                  Text(
+                    item['desc'] ?? '-',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Color.fromARGB(255, 59, 59, 59),
+                      height: 1.3,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const Spacer(),
                   SizedBox(
                     width: double.infinity,
                     height: 36,
@@ -257,7 +248,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           borderRadius: BorderRadius.circular(10),
                         ),
                         elevation: 0,
-                        padding: EdgeInsets.zero,
                       ),
                       onPressed: isClaimed ? null : () => _showItemDetail(item),
                       child: Text(
@@ -314,11 +304,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         index: _selectedIndex,
         children: [
           _buildHomePage(),
-          DonasiSayaScreen(items: items, onItemsChanged: (newItems) {
-            setState(() {
-              items = newItems;
-            });
-          }),
+          DonasiSayaScreen(
+            items: items,
+            onItemsChanged: (newItems) {
+              setState(() {
+                items = newItems;
+              });
+            },
+          ),
           ProfilSayaScreen(username: widget.username),
         ],
       ),
@@ -361,6 +354,37 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ],
         ),
       ),
+      floatingActionButton: _selectedIndex == 1
+          ? FloatingActionButton(
+              backgroundColor: Colors.orange[600],
+              child: const Icon(Icons.add, color: Colors.white),
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TambahDonasiScreen(
+                      onDonasiAdded: (newDonation) {
+                        setState(() {
+                          items.add({
+                            'id': items.length + 1,
+                            'name': newDonation['name'],
+                            'desc': newDonation['desc'],
+                            'contact': newDonation['contact'],
+                            'category': newDonation['category'],
+                            'condition': newDonation['condition'],
+                            'image': newDonation['image'],
+                            'isBase64': true,
+                            'isClaimed': false,
+                            'isMyDonation': true,
+                          });
+                        });
+                      },
+                    ),
+                  ),
+                );
+              },
+            )
+          : null,
     );
   }
 
@@ -448,7 +472,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
               ],
             ),
           ),
@@ -459,7 +482,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               ? SliverToBoxAdapter(
                   child: Center(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const SizedBox(height: 50),
                         Icon(Icons.search_off, size: 80, color: Colors.grey[300]),
